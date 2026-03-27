@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Spotify Now Playing (SSE)</title>
+		<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+	</head>
+
+	<body class="h-dvh flex flex-col gap-16 justify-center items-center bg-black text-white">
+		<h1 class="text-5xl font-bold">Spotify Now Playing (SSE)</h1>
+
+		<div class="relative h-16 flex gap-2" hidden>
+			<img id="cover" class="relative z-10 shadow-black/5 shadow-none rounded-small w-16 h-16 rounded" src="" loading="lazy" />
+
+			<div class="flex flex-col font-default min-w-80">
+				<a id="title" class="transition-colors font-bold text-lg m-0 text-foreground leading-none underline decoration-2 decoration-transparent hover:decoration-white/25">Title</a>
+
+				<div id="artists" class="flex text-sm text-foreground-400 mt-auto"></div>
+
+				<div class="flex">
+					<span id="start">0:00</span>
+
+					<div class="flex flex-col gap-2 w-full my-auto mx-2">
+						<div class="z-0 relative bg-white/25 overflow-hidden h-1 rounded-full">
+							<div id="progress" class="h-full bg-white/50 rounded-full transition-transform duration-500!" style="width: 75%"></div>
+						</div>
+					</div>
+
+					<span id="end">0:00</span>
+				</div>
+			</div>
+		</div>
+	</body>
+
+	<script>
+		const card = document.querySelector("body > div");
+
+		const es = new EventSource("http://localhost:9700/sse");
+
+		es.addEventListener("spotify", ({ data }) => {
+			const { album, artists, track, progress, duration } = JSON.parse(data);
+
+			document.getElementById("cover").src = album.image;
+			document.getElementById("cover").alt = album.name;
+			document.getElementById("title").textContent = track.name;
+			document.getElementById("title").href = track.href;
+
+			setArtists(artists);
+			setProgress(progress, duration);
+
+			card.removeAttribute("hidden");
+		});
+
+		function setArtists(artists) {
+			document.getElementById("artists").innerHTML = "";
+
+			const div = document.createElement("div");
+
+			div.className = "whitespace-nowrap";
+
+			artists.forEach((artist, index) => {
+				const a = document.createElement("a");
+
+				a.className = "transition-colors text-foreground-600 underline decoration-2 decoration-transparent hover:decoration-white/25";
+				a.href = artist.href;
+				a.textContent = artist.name;
+
+				div.appendChild(a);
+
+				if (index < artists.length - 1) div.appendChild(document.createTextNode(", "));
+			});
+
+			document.getElementById("artists").appendChild(div);
+		}
+
+		function setProgress(progress, duration) {
+			const progressInSeconds = Math.floor(progress / 1000);
+			const durationInSeconds = Math.floor(duration / 1000);
+
+			document.getElementById("start").textContent = convertSeconds(progressInSeconds);
+			document.getElementById("progress").style.width = (progressInSeconds / durationInSeconds) * 100 + "%";
+			document.getElementById("end").textContent = convertSeconds(durationInSeconds);
+		}
+
+		function convertSeconds(number) {
+			const hours = Math.floor(number / 3600);
+			const minutes = Math.floor((number / 60) % 60);
+			const seconds = number % 60;
+
+			if (hours === 0) return minutes + ":" + (seconds < 10 ? "0" + seconds : seconds);
+
+			return hours + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+		}
+	</script>
+</html>
