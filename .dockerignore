@@ -1,0 +1,41 @@
+
+# Version control and editor settings
+.git
+.github
+.gitattributes
+.gitignore
+.idea
+.vscode
+
+# Spotify secrets (supplied at runtime with --env-file)
+.env
+.env.*
+*.pem
+*.key
+
+# Development files not used by the Go server
+index.html
+README.md
+LICENSE
+
+# Local binaries, caches and logs
+bin/
+build/
+dist/
+tmp/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+*.log
+
+# Container configuration files
+Dockerfile*
+.dockerignore
+compose*.yml
+compose*.yaml
+docker-compose*.yml
+docker-compose*.yaml
