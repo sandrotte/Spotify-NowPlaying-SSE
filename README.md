@@ -78,7 +78,7 @@ Pick the scopes you need. For “currently playing”, these are typical:
 Open this in your browser (replace `YOUR_CLIENT_ID` and ensure the `redirect_uri` matches your app settings):
 
 ```text
-https://accounts.spotify.com/authorize?response_type=code&client_id=YOUR_CLIENT_ID&scope=user-read-currently-playing%20user-read-playback-state&redirect_uri=http%3A%2F%2Flocalhost%3A8888%2Fcallback
+https://accounts.spotify.com/authorize?response_type=code&client_id=YOUR_CLIENT_ID&scope=user-read-currently-playing%20user-read-playback-state&redirect_uri=http%3A%2F%2F%5B%3A%3A1%5D%3A3000
 ```
 
 After you approve, Spotify will redirect to something like:
